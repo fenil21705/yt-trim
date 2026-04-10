@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: yt-trim-api
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production

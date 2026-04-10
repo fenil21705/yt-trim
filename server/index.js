@@ -14,7 +14,15 @@ if (!fs.existsSync(downloadsDir)) {
 }
 
 const ffmpegStatic = require('ffmpeg-static');
-const ytdlpPath = path.join(__dirname, 'yt-dlp.exe');
+const isWin = process.platform === 'win32';
+const ytdlpPath = isWin
+    ? path.join(__dirname, '..', 'bin', 'yt-dlp.exe')
+    : path.join(__dirname, '..', 'bin', 'yt-dlp');
+
+// Ensure Linux binary is executable (for Render)
+if (!isWin) {
+    try { require('fs').chmodSync(ytdlpPath, '755'); } catch(e) {}
+}
 
 // Helper: find output file (yt-dlp may add suffixes)
 function findOutputFile(basePath) {
@@ -30,7 +38,7 @@ function findOutputFile(basePath) {
 }
 
 // 1. Fetch Video Info
-app.post('/info', async (req, res) => {
+app.post('/api/info', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL required' });
 
@@ -50,7 +58,7 @@ app.post('/info', async (req, res) => {
 });
 
 // 2. Download Full Video (1080p)
-app.post('/download-full', async (req, res) => {
+app.post('/api/download-full', async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ error: 'URL required' });
 
@@ -95,7 +103,7 @@ app.post('/download-full', async (req, res) => {
 });
 
 // 3. Trim Video — FAST METHOD: yt-dlp extracts URLs only, ffmpeg does direct stream+cut
-app.post('/trim', async (req, res) => {
+app.post('/api/trim', async (req, res) => {
     const { url, startTime, endTime } = req.body;
     if (!url || !startTime || !endTime) {
         return res.status(400).json({ error: 'Missing parameters' });

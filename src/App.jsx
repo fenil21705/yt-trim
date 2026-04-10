@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import './index.css';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 function App() {
   const [url, setUrl] = useState('');
   const [step, setStep] = useState(0); // 0=URL, 1=Trim/Download
@@ -88,7 +90,7 @@ function App() {
     setStatus({ type: 'info', msg: 'Getting video info...' });
 
     try {
-      const res = await fetch('/api/info', {
+      const res = await fetch(`${API_URL}/api/info`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
@@ -128,7 +130,7 @@ function App() {
     setStatus({ type: 'info', msg: 'Trimming clip in 1080p... please wait' });
 
     try {
-      const res = await fetch('/api/trim', {
+      const res = await fetch(`${API_URL}/api/trim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, startTime: formatTime(startTime), endTime: formatTime(endTime) })
@@ -157,7 +159,7 @@ function App() {
     setStatus({ type: 'info', msg: 'Downloading full video in 1080p... please wait' });
 
     try {
-      const res = await fetch('/api/download-full', {
+      const res = await fetch(`${API_URL}/api/download-full`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })

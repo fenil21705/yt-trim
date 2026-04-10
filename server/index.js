@@ -37,6 +37,23 @@ function findOutputFile(basePath) {
     return null;
 }
 
+// Health check
+app.get('/', (req, res) => {
+    res.json({
+        status: 'ok',
+        platform: process.platform,
+        ytdlp: fs.existsSync(ytdlpPath) ? 'found' : 'MISSING',
+        ytdlpPath,
+        ffmpeg: fs.existsSync(ffmpegStatic) ? 'found' : 'MISSING',
+        ffmpegPath: ffmpegStatic
+    });
+});
+
+console.log('Platform:', process.platform);
+console.log('yt-dlp path:', ytdlpPath, '| exists:', fs.existsSync(ytdlpPath));
+console.log('ffmpeg path:', ffmpegStatic, '| exists:', fs.existsSync(ffmpegStatic));
+
+
 // 1. Fetch Video Info
 app.post('/api/info', async (req, res) => {
     const { url } = req.body;
@@ -172,9 +189,7 @@ app.post('/api/trim', async (req, res) => {
     });
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`yt-dlp: ${ytdlpPath}`);
-    console.log(`ffmpeg: ${ffmpegStatic}`);
+    console.log(`Server running on port ${PORT}`);
 });

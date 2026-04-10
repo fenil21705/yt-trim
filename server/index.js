@@ -61,7 +61,7 @@ app.post('/api/info', async (req, res) => {
 
     execFile(ytdlpPath, [
         url, '--print', 'duration', '--print', 'title', '--no-playlist', '--no-warnings',
-        '--extractor-args', 'youtube:player_client=android'
+        '--extractor-args', 'youtube:player_client=default,web_creator'
     ], { timeout: 30000 }, (error, stdout, stderr) => {
         if (error) {
             console.error('Info Error:', stderr || error.message);
@@ -142,7 +142,7 @@ app.post('/api/trim', async (req, res) => {
     // Step 1: Get direct video+audio URLs from yt-dlp (NO download, just URL extraction)
     execFile(ytdlpPath, [
         url, '-f', 'bestvideo[height<=1080]+bestaudio', '-g', '--no-playlist', '--no-warnings',
-        '--extractor-args', 'youtube:player_client=android'
+        '--extractor-args', 'youtube:player_client=default,web_creator'
     ], { timeout: 30000 }, (err, stdout, stderr) => {
         if (err) {
             console.error('URL extraction failed:', stderr);

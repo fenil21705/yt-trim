@@ -93,7 +93,7 @@ function App() {
       const baseUrl = API_URL.replace(/\/$/, '');
       const res = await fetch(`${baseUrl}/api/info`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
         body: JSON.stringify({ url })
       });
       if (!res.ok) {
@@ -138,7 +138,7 @@ function App() {
       const baseUrl = API_URL.replace(/\/$/, '');
       const res = await fetch(`${baseUrl}/api/trim`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
         body: JSON.stringify({ url, startTime: formatTime(startTime), endTime: formatTime(endTime) })
       });
       if (!res.ok) {
@@ -169,7 +169,7 @@ function App() {
       const baseUrl = API_URL.replace(/\/$/, '');
       const res = await fetch(`${baseUrl}/api/download-full`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true' },
         body: JSON.stringify({ url })
       });
       if (!res.ok) {

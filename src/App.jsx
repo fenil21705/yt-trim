@@ -90,12 +90,17 @@ function App() {
     setStatus({ type: 'info', msg: 'Getting video info...' });
 
     try {
-      const res = await fetch(`${API_URL}/api/info`, {
+      const baseUrl = API_URL.replace(/\/$/, '');
+      const res = await fetch(`${baseUrl}/api/info`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
-      if (!res.ok) throw new Error('Could not fetch video info');
+      if (!res.ok) {
+        let errStr = await res.text();
+        try { const j = JSON.parse(errStr); errStr = j.error || errStr; } catch(e){}
+        throw new Error(`API Error: ${res.status} - ${errStr}`);
+      }
       const data = await res.json();
 
       setVideoId(id);
@@ -130,14 +135,16 @@ function App() {
     setStatus({ type: 'info', msg: 'Trimming clip in 1080p... please wait' });
 
     try {
-      const res = await fetch(`${API_URL}/api/trim`, {
+      const baseUrl = API_URL.replace(/\/$/, '');
+      const res = await fetch(`${baseUrl}/api/trim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url, startTime: formatTime(startTime), endTime: formatTime(endTime) })
       });
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.details || err.error || 'Trim failed');
+        let errStr = await res.text();
+        try { const j = JSON.parse(errStr); errStr = j.error || errStr; } catch(e){}
+        throw new Error(`API Error: ${res.status} - ${errStr}`);
       }
       const blob = await res.blob();
       const a = document.createElement('a');
@@ -159,12 +166,17 @@ function App() {
     setStatus({ type: 'info', msg: 'Downloading full video in 1080p... please wait' });
 
     try {
-      const res = await fetch(`${API_URL}/api/download-full`, {
+      const baseUrl = API_URL.replace(/\/$/, '');
+      const res = await fetch(`${baseUrl}/api/download-full`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
-      if (!res.ok) throw new Error('Full download failed');
+      if (!res.ok) {
+        let errStr = await res.text();
+        try { const j = JSON.parse(errStr); errStr = j.error || errStr; } catch(e){}
+        throw new Error(`API Error: ${res.status} - ${errStr}`);
+      }
       const blob = await res.blob();
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);

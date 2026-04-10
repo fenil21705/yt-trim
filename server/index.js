@@ -63,8 +63,8 @@ app.post('/api/info', async (req, res) => {
         url, '--print', 'duration', '--print', 'title', '--no-playlist', '--no-warnings'
     ], { timeout: 30000 }, (error, stdout, stderr) => {
         if (error) {
-            console.error('Info Error:', error.message);
-            return res.status(500).json({ error: 'Could not fetch video info' });
+            console.error('Info Error:', stderr || error.message);
+            return res.status(500).json({ error: `yt-dlp error: ${stderr || error.message}`.substring(0, 500) });
         }
         const lines = stdout.trim().split('\n').map(l => l.trim());
         const duration = parseInt(lines[0]) || 300;

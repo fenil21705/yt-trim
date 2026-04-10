@@ -24,6 +24,10 @@ if (!isWin) {
     try { require('fs').chmodSync(ytdlpPath, '755'); } catch(e) {}
 }
 
+const cookiesPath = path.join(__dirname, 'cookies.txt');
+const hasCookies = fs.existsSync(cookiesPath);
+const cookieArgs = hasCookies ? ['--cookies', cookiesPath] : [];
+
 // Helper: find output file (yt-dlp may add suffixes)
 function findOutputFile(basePath) {
     const dir = path.dirname(basePath);
@@ -61,7 +65,8 @@ app.post('/api/info', async (req, res) => {
 
     execFile(ytdlpPath, [
         url, '--print', 'duration', '--print', 'title', '--no-playlist', '--no-warnings',
-        '--extractor-args', 'youtube:player_client=default,web_creator'
+        '--extractor-args', 'youtube:player_client=default,web_creator',
+        ...cookieArgs
     ], { timeout: 30000 }, (error, stdout, stderr) => {
         if (error) {
             console.error('Info Error:', stderr || error.message);
@@ -92,6 +97,7 @@ app.post('/api/download-full', async (req, res) => {
         '--no-mtime',
         '--no-playlist',
         '--no-warnings',
+        ...cookieArgs,
         '--concurrent-fragments', '10',
         '--buffer-size', '64K',
         '--http-chunk-size', '10M',
@@ -142,7 +148,8 @@ app.post('/api/trim', async (req, res) => {
     // Step 1: Get direct video+audio URLs from yt-dlp (NO download, just URL extraction)
     execFile(ytdlpPath, [
         url, '-f', 'bestvideo[height<=1080]+bestaudio', '-g', '--no-playlist', '--no-warnings',
-        '--extractor-args', 'youtube:player_client=default,web_creator'
+        '--extractor-args', 'youtube:player_client=default,web_creator',
+        ...cookieArgs
     ], { timeout: 30000 }, (err, stdout, stderr) => {
         if (err) {
             console.error('URL extraction failed:', stderr);

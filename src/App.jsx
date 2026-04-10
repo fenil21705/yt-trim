@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './index.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? '' : 'https://yt-trim-api.onrender.com');
 
 function App() {
   const [url, setUrl] = useState('');
